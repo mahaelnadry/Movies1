@@ -85,7 +85,7 @@ public class MainActivityFragment extends Fragment {
             System.out.println("entered if movie array=null ");
             ArrayList<Movie_obj> temp_array = new ArrayList<Movie_obj>();
             Movie_obj one;
-            one = new Movie_obj("titanic","/aBBQSC8ZECGn6Wh92gKDOakSC8p.jpg"," "," "," "," "," "," ","trailer hard coded ");
+            one = new Movie_obj("titanic","/aBBQSC8ZECGn6Wh92gKDOakSC8p.jpg"," "," "," "," "," "," empty ","trailer hard coded ");
             temp_array.add(one);
             movie_Adapter = new GridAdapter(getActivity(), R.layout.grid_item,temp_array);
         }
