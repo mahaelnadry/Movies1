@@ -55,12 +55,14 @@ movies_obj_array=movie_array;
         System.out.println("add is called");
         return added;
     }
+    /*
     public void clear()
     {    System.out.println("count before clear is"+this.movies_obj_array.size());
         System.out.println("clear is called");
        this. movies_obj_array.clear();
         System.out.println("count after clear is"+this.movies_obj_array.size());
     }
+    */
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         System.out.println("get view is called");
