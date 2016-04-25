@@ -1,0 +1,8 @@
+api
+b7e2c81ec5a30ec647b2a6e26affb201
+
+Example API Request
+
+https://api.themoviedb.org/3/movie/550?api_key=b7e2c81ec5a30ec647b2a6e26affb201
+
+https://www.themoviedb.org/documentation/api
