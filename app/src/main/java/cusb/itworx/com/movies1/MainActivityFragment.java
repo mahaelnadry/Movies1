@@ -1,5 +1,6 @@
 package cusb.itworx.com.movies1;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -8,8 +9,12 @@ import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.GridView;
 
@@ -36,31 +41,50 @@ public class MainActivityFragment extends Fragment {
     public  GridAdapter movie_Adapter;
     public ArrayList <Movie_obj>movie_obj_array;
     public GridView movies_Grid;
+    public  String criteria;
     public void UpdateMovie() {
         System.out.println("updatemovie is called ");
         FetchMovieTask weatherTask= new FetchMovieTask();
 
         //SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getActivity());
        // String location = settings.getString(getString(R.string.pref_location_key),getString(R.string.pref_location_default));
-
+        //weatherTask.execute(criteria);
         weatherTask.execute("popular");
         System.out.println("after execute in update movie ");
+
     }
 
     public MainActivityFragment() {
     }
-    /*
-    @Overrideupd
-    public void onStart() {
-        super.onStart();
-        UpdateMovie();
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
     }
-    */
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        int id = item.getItemId();
+        if (id == R.id.action_rated) {
+            criteria="top_rated";
+        }
+        if (id == R.id.action_popular){
+            criteria="popular";
+        }
+        if (id == R.id.action_fav) {
+            //TO DO Favorite list
+        }
+        return true;
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
         movie_obj_array= new ArrayList<Movie_obj>();
-
+       // MainActivity activity = (MainActivity) getActivity();
+         //criteria = activity.getSelect();
         UpdateMovie();
     }
 
@@ -69,34 +93,39 @@ public class MainActivityFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-        final String[] List1 = {"/aBBQSC8ZECGn6Wh92gKDOakSC8p.jpg",
-                "/aBBQSC8ZECGn6Wh92gKDOakSC8p.jpg",
-                "/aBBQSC8ZECGn6Wh92gKDOakSC8p.jpg",
-                "/aBBQSC8ZECGn6Wh92gKDOakSC8p.jpg",
-                "/aBBQSC8ZECGn6Wh92gKDOakSC8p.jpg",
-                "/aBBQSC8ZECGn6Wh92gKDOakSC8p.jpg",
-        };
-        // List<String> weekForecast = new ArrayList<String>(Arrays.asList(List1));
-//R.layout.grid_item, R.id.movieImage_view,
+        //final String[] List1 = {"/aBBQSC8ZECGn6Wh92gKDOakSC8p.jpg",
+        //       "/aBBQSC8ZECGn6Wh92gKDOakSC8p.jpg"};
         //final ArrayList<String> movie_array = new ArrayList<String>(Arrays.asList(List1));
-       // GridAdapter ;
-        if(movie_obj_array==null)
-        {
+        // GridAdapter ;
+        if (movie_obj_array == null) {
             System.out.println("entered if movie array=null ");
             ArrayList<Movie_obj> temp_array = new ArrayList<Movie_obj>();
             Movie_obj one;
-            one = new Movie_obj("titanic","/aBBQSC8ZECGn6Wh92gKDOakSC8p.jpg"," "," "," "," "," "," empty ","trailer hard coded ");
+            one = new Movie_obj("titanic", "/aBBQSC8ZECGn6Wh92gKDOakSC8p.jpg", " ", " ", " ", " ", " ", " empty ", "trailer hard coded ");
             temp_array.add(one);
-            movie_Adapter = new GridAdapter(getActivity(), R.layout.grid_item,temp_array);
-        }
-        else {
+            movie_Adapter = new GridAdapter(getActivity(), R.layout.grid_item, temp_array);
+        } else {
             System.out.println("entered  movie array not null ");
+
             movie_Adapter = new GridAdapter(getActivity(), R.layout.grid_item, movie_obj_array);
         }
-       // System.out.println("movie adapter count is"+movie_Adapter.getCount());
-          movies_Grid = (GridView) rootView.findViewById(R.id.movieGrid_view);
+        // System.out.println("movie adapter count is"+movie_Adapter.getCount());
+        movies_Grid = (GridView) rootView.findViewById(R.id.movieGrid_view);
         movies_Grid.setAdapter(movie_Adapter);
 
+        movies_Grid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Movie_obj clicked_movie = movie_Adapter.getItem(position);
+                //((Callback) getActivity()).onItemSelected(movie);
+                System.out.println("clicked item");
+                Intent i = new Intent(getActivity(), DetailsActivity.class);
+                i.putExtra("movie_object", clicked_movie);
+                startActivity(i);
+            }
+        });
+        return rootView;
+    }
         /*
         movies_Grid.post(new Runnable() {
             public void run() {
@@ -107,11 +136,6 @@ public class MainActivityFragment extends Fragment {
 
         });
         */
-       // movie_Adapter.getView(1,inflater.inflate(R.layout.fragment_main, container, false),)
-        //movies_Grid.setAdapter(movie_Adapter);  //linking between adapter and listview
-        return inflater.inflate(R.layout.fragment_main, container, false);
-    }
-
 
 
     public class FetchMovieTask extends AsyncTask<String, Void,ArrayList<Movie_obj>> {
@@ -119,20 +143,8 @@ public class MainActivityFragment extends Fragment {
 
         private final String LOG_TAG = FetchMovieTask.class.getSimpleName();
 
-
-        /**
-         * Take the String representing the complete forecast in JSON Format and
-         * pull out the data we need to construct the Strings needed for the wireframes.
-         * <p/>
-         * Fortunately parsing is easy:  constructor takes the JSON string and converts it
-         * into an Object hierarchy for us.
-         */
-
         @Override
         protected ArrayList<Movie_obj> doInBackground(String... params) {
-            // protected Void doInBackground(String... params) {
-            // These two need to be declared outside the try/catch
-            // so that they can be closed in the finally block.
             System.out.println("start of do in background");
             HttpURLConnection urlConnection = null;
             BufferedReader reader = null;
@@ -162,11 +174,6 @@ public class MainActivityFragment extends Fragment {
                 Log.v(LOG_TAG, "before url");
                 URL url = new URL(builtUri.toString());
                 Log.v(LOG_TAG, "after url");
-                /*
-                Uri builtUri = Uri.parse(FORECAST_BASE_URL).buildUpon()
-                        .appendQueryParameter(QUERY_PARAM,params[0])
-                        .appendQueryParameter(FORMAT_PARAM,format)
-               */
                 Log.v(LOG_TAG, "BUILT URI" + builtUri.toString());
                 System.out.println("built uri from system.out: " + builtUri.toString());
                 // Create the request to OpenWeatherMap, and open the connection
@@ -184,10 +191,6 @@ public class MainActivityFragment extends Fragment {
                 // Read the input stream into a String
                 InputStream inputStream = urlConnection.getInputStream();
                 StringBuffer buffer = new StringBuffer();
-                //java.util.Scanner s = new java.util.Scanner(inputStream).useDelimiter("\\A");
-                //String theString= s.hasNext() ? s.next() : "";
-                //System.out.println("inputstream  is "+theString);
-                //String theString = IOUtils.toString(inputStream, encoding);
                 if (inputStream == null) {
                     // Nothing to do.
                     System.out.println("input stream is null");
@@ -197,9 +200,6 @@ public class MainActivityFragment extends Fragment {
 
                 String line;
                 while ((line = reader.readLine()) != null) {
-                    // Since it's JSON, adding a newline isn't necessary (it won't affect parsing)
-                    // But it does make debugging a *lot* easier if you print out the completed
-                    // buffer for debugging.
                     System.out.println("reader in system"+line+"\n");
                     buffer.append(line + "\n");
                 }
@@ -256,15 +256,13 @@ public class MainActivityFragment extends Fragment {
             final String OWM_COUNT = "vote_count";
             final String OWM_AVG = "vote_average";
 
-           // JSONArray movieArray = new JsonArray(movieJsonStr);
-            //JSONObject movieJson = new JSONObject(movieArray);
-
             JSONObject AllJson = new JSONObject(movieJsonStr);
             JSONArray resultsArray = AllJson.getJSONArray("results");
 
             //String[] imgStrs = new String[resultsArray.length()];
            // ArrayList<editTextString> list = new ArrayList<editTextString>();
             //movie_obj_array = new ArrayList <Movie_obj>();
+            movie_obj_array.clear();
             for (int i = 0; i < resultsArray.length(); i++) {
                 // For now, using the format "Day, description, hi/low"
                 // Get the JSON object representing the day
@@ -280,26 +278,12 @@ public class MainActivityFragment extends Fragment {
                         "   ");
                movie_obj_array.add(temp);
                // movie_obj_array.set(i,temp);
-                /*
-                movie_obj_array[i].img_path=movieJson.getString(OWM_IMG);
-                movie_obj_array[i].desc=movieJson.getString(OWM_DESC);
-                movie_obj_array[i].date=movieJson.getString(OWM_DATE);
-                movie_obj_array[i].title=movieJson.getString(OWM_TITLE);
-                movie_obj_array[i].count=movieJson.getString(OWM_COUNT);
-                movie_obj_array[i].avg=movieJson.getString(OWM_AVG);
-                */
                 System.out.println("img path   "+movie_obj_array.get(i).getImg_path()     );
                 System.out.println("img desc   "+movie_obj_array.get(i).getDesc()    );
                 //imgStrs[i] =  movie_obj_array[i].img_path;
 
             }
-            //String[] resultStrs = new String[10];
-            /*
-            for (String s : imgStrs) {
-                System.out.println("img string   "+s);
 
-            }
-            */
             System.out.println("end of get movie data");
             return movie_obj_array;
 
@@ -310,15 +294,10 @@ public class MainActivityFragment extends Fragment {
         protected void onPostExecute(ArrayList<Movie_obj> result) {    //result da el rage3 mn do in background
             System.out.println("start of onpostexecture");
             if (result != null) {
+                movie_Adapter.notifyDataSetChanged();
                 System.out.println("results of onpostexecture not null");
                 System.out.println("size of results is"+result.size());
-             //   movie_Adapter.clear();
-                /*
-                for (Movie_obj movieobj : result) {
-                    movie_Adapter.add(movieobj);   // 3shan n7ot el data el rag3a mn el server fy el array adapter
-                    System.out.println("img url in post   " + movieobj.getImg_path());
-                }
-                */
+
                 for(int i=0 ; i<movie_Adapter.getCount() ; i++){
                     Movie_obj s = movie_Adapter.getItem(i);
                     System.out.println("img url in adapter   " + s.getImg_path());

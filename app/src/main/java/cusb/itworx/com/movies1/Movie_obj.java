@@ -1,9 +1,11 @@
 package cusb.itworx.com.movies1;
 
+import java.io.Serializable;
+
 /**
  * Created by mahae_000 on 4/23/2016.
  */
-public class Movie_obj {
+public class Movie_obj implements Serializable{
     String img_path;
     String desc;
     String date;

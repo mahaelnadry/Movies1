@@ -1,5 +1,9 @@
 <resources>
     <string name="app_name">Movies1</string>
     <string name="action_settings">Settings</string>
+    <string name="action_rated">Top Rated</string>
+    <string name="action_popular">Most Popular</string>
+    <string name="action_fav">My Favorites</string>
     <string name="title_activity_main2">Main2Activity</string>
+    <string name="title_activity_details">DetailsActivity</string>
 </resources>

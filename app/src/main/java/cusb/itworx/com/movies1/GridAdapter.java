@@ -81,7 +81,7 @@ movies_obj_array=movie_array;
         //iconView.setImageResource(R.drawable.picture1);
 
     //Picasso.with(context).load("http://i.imgur.com/DvpvklR.png").into(imageView);
-        String size="w185/";
+        String size="w185";
 String full_url="http://image.tmdb.org/t/p/"+size+this.movies_obj_array.get(position).getImg_path();
 
         Picasso.with(context)

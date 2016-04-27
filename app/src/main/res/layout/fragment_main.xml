@@ -14,8 +14,17 @@
 
     <GridView
         android:layout_width="match_parent"
-        android:layout_height="465dp"
+        android:layout_height="match_parent"
+        android:numColumns="2"
+        android:columnWidth="154dp"
+        android:rowHeight="231dp"
         android:id="@+id/movieGrid_view"
+        android:paddingBottom="16dp"
+        android:paddingTop="16dp"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:gravity="center"
+        android:stretchMode="spacingWidthUniform"
         android:layout_gravity="center_horizontal|top" />
 
 
