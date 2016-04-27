@@ -27,6 +27,5 @@
         android:stretchMode="spacingWidthUniform"
         android:layout_gravity="center_horizontal|top" />
 
-
 </FrameLayout>
 

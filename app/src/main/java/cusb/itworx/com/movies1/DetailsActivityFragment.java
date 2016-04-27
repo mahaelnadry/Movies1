@@ -50,8 +50,8 @@ public class DetailsActivityFragment extends Fragment {
         ImageView img = (ImageView) rootView.findViewById(R.id.img_poster);
         Picasso.with(getActivity())
                 .load(full_url)
-                .placeholder(R.drawable.picture1)
-                .error(R.drawable.icon)
+                .placeholder(R.drawable.poster_loading)
+                .error(R.drawable.poster_loading_error)
                 .fit()
                 .into(img);
     return  rootView;

@@ -86,8 +86,8 @@ String full_url="http://image.tmdb.org/t/p/"+size+this.movies_obj_array.get(posi
 
         Picasso.with(context)
                 .load(full_url)
-                .placeholder(R.drawable.picture1)
-                .error(R.drawable.icon)
+                .placeholder(R.drawable.poster_loading)
+                .error(R.drawable.poster_loading_error)
                 .fit()
                 .into(img);
 

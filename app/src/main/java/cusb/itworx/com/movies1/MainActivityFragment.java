@@ -41,15 +41,17 @@ public class MainActivityFragment extends Fragment {
     public  GridAdapter movie_Adapter;
     public ArrayList <Movie_obj>movie_obj_array;
     public GridView movies_Grid;
-    public  String criteria;
+    public  String criteria="popular";
     public void UpdateMovie() {
         System.out.println("updatemovie is called ");
         FetchMovieTask weatherTask= new FetchMovieTask();
 
         //SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getActivity());
        // String location = settings.getString(getString(R.string.pref_location_key),getString(R.string.pref_location_default));
-        //weatherTask.execute(criteria);
-        weatherTask.execute("popular");
+        System.out.println("criteria before execute is" + criteria);
+        weatherTask.execute(criteria);
+        //weatherTask.execute("popular");
+       // weatherTask.execute("top_rated");
         System.out.println("after execute in update movie ");
 
     }
@@ -67,10 +69,15 @@ public class MainActivityFragment extends Fragment {
 
         int id = item.getItemId();
         if (id == R.id.action_rated) {
+            System.out.println("top rated is pressed");
             criteria="top_rated";
+            UpdateMovie();
         }
         if (id == R.id.action_popular){
+            System.out.println("most popular is pressed");
             criteria="popular";
+            //weatherTask.execute("top_rated");
+            UpdateMovie();
         }
         if (id == R.id.action_fav) {
             //TO DO Favorite list
