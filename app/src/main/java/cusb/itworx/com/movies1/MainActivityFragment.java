@@ -1,5 +1,6 @@
 package cusb.itworx.com.movies1;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -18,6 +19,9 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.GridView;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -31,6 +35,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -41,7 +46,8 @@ public class MainActivityFragment extends Fragment {
     public  GridAdapter movie_Adapter;
     public ArrayList <Movie_obj>movie_obj_array;
     public GridView movies_Grid;
-    public  String criteria="popular";
+    public  String criteria="popular";  // default value is popular
+    SharedPreferences mPrefs ;
     public void UpdateMovie() {
         System.out.println("updatemovie is called ");
         FetchMovieTask weatherTask= new FetchMovieTask();
@@ -54,6 +60,22 @@ public class MainActivityFragment extends Fragment {
        // weatherTask.execute("top_rated");
         System.out.println("after execute in update movie ");
 
+    }
+    public void GetFavMovies() {
+        movie_obj_array.clear();
+        mPrefs=PreferenceManager.getDefaultSharedPreferences(getActivity());
+        //mPrefs = getActivity().getSharedPreferences("fav_movies_id", Context.MODE_PRIVATE);
+        Gson gson = new Gson();
+        Map<String,?> keys =mPrefs.getAll();
+        for(Map.Entry<String,?> entry : keys.entrySet()){
+            System.out.println("map values in main" + entry.getKey() + ": " +
+                    entry.getValue().toString());
+            Movie_obj obj = gson.fromJson(entry.getValue().toString(),Movie_obj.class);
+            System.out.println("the movie is " + obj.getTitle() + "   " + obj.getDesc());
+            movie_obj_array.add(obj);
+            //  clear array list and update view , notifydataset
+        }
+        movie_Adapter.notifyDataSetChanged();
     }
 
     public MainActivityFragment() {
@@ -79,8 +101,11 @@ public class MainActivityFragment extends Fragment {
             //weatherTask.execute("top_rated");
             UpdateMovie();
         }
-        if (id == R.id.action_fav) {
+        if (id == R.id.action_show_fav) {
             //TO DO Favorite list
+            GetFavMovies();
+            System.out.println("show fav is pressed");
+
         }
         return true;
     }
@@ -100,15 +125,11 @@ public class MainActivityFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-        //final String[] List1 = {"/aBBQSC8ZECGn6Wh92gKDOakSC8p.jpg",
-        //       "/aBBQSC8ZECGn6Wh92gKDOakSC8p.jpg"};
-        //final ArrayList<String> movie_array = new ArrayList<String>(Arrays.asList(List1));
-        // GridAdapter ;
         if (movie_obj_array == null) {
             System.out.println("entered if movie array=null ");
             ArrayList<Movie_obj> temp_array = new ArrayList<Movie_obj>();
             Movie_obj one;
-            one = new Movie_obj("titanic", "/aBBQSC8ZECGn6Wh92gKDOakSC8p.jpg", " ", " ", " ", " ", " ", " empty ", "trailer hard coded ");
+            one = new Movie_obj("titanic", "/aBBQSC8ZECGn6Wh92gKDOakSC8p.jpg", " ", " ", " ", " ", " ", " empty ", "trailer hard coded ","  ",false);
             temp_array.add(one);
             movie_Adapter = new GridAdapter(getActivity(), R.layout.grid_item, temp_array);
         } else {
@@ -167,12 +188,10 @@ public class MainActivityFragment extends Fragment {
                         "https://api.themoviedb.org/3/movie";
                 //http://api.themoviedb.org/3/movie/popular?api_key
                 //  "https://api.themoviedb.org/3/movie/?api_key=b7e2c81ec5a30ec647b2a6e26affb201";
-                //name , pic, rate , desc
                 final String FIND_PARAM = "popular";
                 String api_key="b7e2c81ec5a30ec647b2a6e26affb201";
                 final String API_KEY=api_key;
                 final String API="api_key";
-                //.appendQueryParameter(FORMAT_PARAM, format)
                 Log.v(LOG_TAG, "before URI");
                 Uri builtUri = Uri.parse(MOVIE_BASE_URL).buildUpon()
                         .appendEncodedPath(params[0])
@@ -238,7 +257,6 @@ public class MainActivityFragment extends Fragment {
             try {
                 ArrayList<Movie_obj> results=new ArrayList<Movie_obj>();
                 results=getmovieDataFromJson(MovieJsonStr);
-                //System.out.println("get count results"+results.ge);
                 System.out.println("end of do in background return results");
                 return results;
             } catch (JSONException e) {
@@ -265,10 +283,6 @@ public class MainActivityFragment extends Fragment {
 
             JSONObject AllJson = new JSONObject(movieJsonStr);
             JSONArray resultsArray = AllJson.getJSONArray("results");
-
-            //String[] imgStrs = new String[resultsArray.length()];
-           // ArrayList<editTextString> list = new ArrayList<editTextString>();
-            //movie_obj_array = new ArrayList <Movie_obj>();
             movie_obj_array.clear();
             for (int i = 0; i < resultsArray.length(); i++) {
                 // For now, using the format "Day, description, hi/low"
@@ -282,12 +296,11 @@ public class MainActivityFragment extends Fragment {
                         movieJson.getString(OWM_ID),movieJson.getString(OWM_POPULAR),
                         movieJson.getString(OWM_COUNT),
                         movieJson.getString(OWM_AVG),
-                        "   ");
+                        "   ","  ",false);
                movie_obj_array.add(temp);
                // movie_obj_array.set(i,temp);
                 System.out.println("img path   "+movie_obj_array.get(i).getImg_path()     );
                 System.out.println("img desc   "+movie_obj_array.get(i).getDesc()    );
-                //imgStrs[i] =  movie_obj_array[i].img_path;
 
             }
 

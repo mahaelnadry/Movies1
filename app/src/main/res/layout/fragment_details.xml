@@ -38,7 +38,7 @@
             android:id="@+id/rating_date"
             android:orientation="vertical"
             android:paddingTop="30dp"
-            android:paddingRight="60dp"
+            android:paddingRight="40dp"
             android:layout_alignParentRight="true">
             <TextView
                 android:layout_width="wrap_content"
@@ -54,12 +54,14 @@
                 android:text="Medium Text"
                 android:id="@+id/text_rating"
                 />
-            <ToggleButton
+            <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="New ToggleButton"
+                android:text="Add to"
+                android:drawableRight="@android:drawable/btn_star_big_off"
                 android:id="@+id/button_fav"
-                android:layout_gravity="center_vertical"
+                android:layout_gravity="center_horizontal"
+
                 />
         </LinearLayout>
 

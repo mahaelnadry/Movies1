@@ -16,11 +16,12 @@ public class Movie_obj implements Serializable{
 
     String avg;
     String trailer;
-
+    String reviews;
+    boolean fav;
     public Movie_obj() {
     }
 
-    public Movie_obj(String title, String img_path, String desc, String date, String id, String popularity, String count, String avg, String trailer) {
+    public Movie_obj(String title, String img_path, String desc, String date, String id, String popularity, String count, String avg, String trailer,String reviews,boolean fav) {
         this.title = title;
         this.img_path = img_path;
         this.desc = desc;
@@ -30,6 +31,24 @@ public class Movie_obj implements Serializable{
         this.count = count;
         this.avg = avg;
         this.trailer = trailer;
+        this.reviews=reviews;
+        this.fav=fav;
+    }
+
+    public boolean isFav() {
+        return fav;
+    }
+
+    public void setFav(boolean fav) {
+        this.fav = fav;
+    }
+
+    public String getReviews() {
+        return reviews;
+    }
+
+    public void setReviews(String reviews) {
+        this.reviews = reviews;
     }
 
     public String getImg_path() {
