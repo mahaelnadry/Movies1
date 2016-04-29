@@ -150,6 +150,8 @@ public class MainActivityFragment extends Fragment {
                 Intent i = new Intent(getActivity(), DetailsActivity.class);
                 i.putExtra("movie_object", clicked_movie);
                 startActivity(i);
+
+
             }
         });
         return rootView;
