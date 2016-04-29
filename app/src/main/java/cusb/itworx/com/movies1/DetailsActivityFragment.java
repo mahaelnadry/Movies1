@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.squareup.picasso.Picasso;
@@ -40,15 +41,23 @@ public class DetailsActivityFragment extends Fragment {
     Button fav_btn;
     Button trailer_btn;
     SharedPreferences mPrefs ;
-    String Trailer_key="empty";
+    String Trailer_key;
     public DetailsActivityFragment() {
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-
+        Trailer_key="empty";
         super.onCreate(savedInstanceState);
 
+
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        Trailer_Async trailer = new Trailer_Async();
+        trailer.execute(Detailed_movie.getId());
     }
 
     @Override
@@ -123,12 +132,17 @@ public class DetailsActivityFragment extends Fragment {
         trailer_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Trailer_Async trailer = new Trailer_Async();
-                trailer.execute(Detailed_movie.getId());
-                while(Trailer_key=="null"){}
-                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.youtube.com/watch?v=" + Trailer_key));
-                System.out.println("youtube link"+"http://www.youtube.com/watch?v="+Trailer_key);
-                startActivity(intent);
+
+                if(Trailer_key=="empty")
+                {
+                    Toast.makeText(getActivity(), "Loading Trailer , please wait",
+                            Toast.LENGTH_LONG).show();
+                }
+                else {
+                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.youtube.com/watch?v=" + Trailer_key));
+                    System.out.println("youtube link" + "http://www.youtube.com/watch?v=" + Trailer_key);
+                    startActivity(intent);
+                }
 
             }});
 
