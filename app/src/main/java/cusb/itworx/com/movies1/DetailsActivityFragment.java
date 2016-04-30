@@ -13,8 +13,11 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -31,6 +34,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -42,13 +48,28 @@ public class DetailsActivityFragment extends Fragment {
     Button trailer_btn;
     SharedPreferences mPrefs ;
     String Trailer_key;
+    ListView Trailers_ListView;
+    ListView Reviews_ListView;
+    ArrayList<Trailer_obj> Trailers_List;
+    public ArrayAdapter<String> TrailersAdapter;
+    List<String> Comments_List;
+    List<String> Authors_List;
+    Trailer_obj trailer_temp;
     public DetailsActivityFragment() {
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         Trailer_key="empty";
+        Trailers_List= new ArrayList<Trailer_obj>();
+        Trailer_obj trailer_temp = new Trailer_obj();
         super.onCreate(savedInstanceState);
+        Intent intent = getActivity().getIntent();
+        if (intent != null && intent.hasExtra("movie_object")) {
+            Detailed_movie = (Movie_obj) intent.getSerializableExtra("movie_object");
+            Trailer_Async trailer = new Trailer_Async();
+            trailer.execute(Detailed_movie.getId());
+        }
 
 
     }
@@ -56,24 +77,16 @@ public class DetailsActivityFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        Trailer_Async trailer = new Trailer_Async();
-        trailer.execute(Detailed_movie.getId());
+        //Trailer_Async trailer = new Trailer_Async();
+        //trailer.execute(Detailed_movie.getId());
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
-
-
         System.out.println("detailed fragment started ");
         View rootView = inflater.inflate(R.layout.fragment_details, container, false);
 
-
-        Intent intent = getActivity().getIntent();
-        if (intent != null && intent.hasExtra("movie_object")) {
-            Detailed_movie = (Movie_obj) intent.getSerializableExtra("movie_object");
-        }
         //Detailed_movie = new Movie_obj("The Hunger Games: Mockingjay - Part 1","/gj282Pniaa78ZJfbaixyLXnXEDI.jpg"
           //      ,"Katniss Everdeen reluctantly becomes the symbol of a mass rebellion against the autocratic Capitol."
         //  ,"2014-11-18","131631","12.707473","2780","6.8","null trailer");
@@ -82,6 +95,7 @@ public class DetailsActivityFragment extends Fragment {
         ((TextView) (rootView.findViewById(R.id.text_rating))).setText(Detailed_movie.getAvg());
         ((TextView) (rootView.findViewById(R.id.text_date))).setText(Detailed_movie.getDate());
         ((TextView) (rootView.findViewById(R.id.text_desc))).setText(Detailed_movie.getDesc());
+
         String size = "w185/";
         String full_url = "http://image.tmdb.org/t/p/" + size + Detailed_movie.getImg_path();
         ImageView img = (ImageView) rootView.findViewById(R.id.img_poster);
@@ -92,12 +106,12 @@ public class DetailsActivityFragment extends Fragment {
                 .fit()
                 .into(img);
        mPrefs=PreferenceManager.getDefaultSharedPreferences(getActivity());
-       // mPrefs = getActivity().getSharedPreferences("fav_movies_id", Context.MODE_PRIVATE);
-        //mPrefs = getActivity().getSharedPreferences("fav_movies_data", Context.MODE_PRIVATE);
         fav_btn=(Button)rootView.findViewById(R.id.button_fav);
-        trailer_btn=(Button)rootView.findViewById(R.id.button_trailer);
+        Trailers_ListView=(ListView)rootView.findViewById(R.id.Listview_trailers);
+       Reviews_ListView=(ListView)rootView.findViewById(R.id.Listview_reviews);
+       // trailer_btn=(Button)rootView.findViewById(R.id.button_trailer);
         String movie_isFav = (mPrefs.getString(Detailed_movie.getId(), "not_fav"));
-        System.out.println("channel is "+movie_isFav);
+        System.out.println("channel is " + movie_isFav);
         if(movie_isFav!="not_fav")
         {
             fav_btn.setText("Added to");
@@ -128,23 +142,34 @@ public class DetailsActivityFragment extends Fragment {
 
             }});
 
-
-        trailer_btn.setOnClickListener(new View.OnClickListener() {
+            List<String> video_names = new ArrayList<String>();
+            for (int i = 0; i < Trailers_List.size(); i++) {
+                video_names.add(Trailers_List.get(i).getName());
+            }
+            TrailersAdapter = new ArrayAdapter<String>(getActivity(), R.layout.trailer_item, R.id.list_item_trailer, video_names);
+            //weekForecast.add()// lw 3izeen nzawed elements tany fy el array
+            Trailers_ListView.setAdapter(TrailersAdapter);  //linking between adapter and listview
+       // }
+        Trailers_ListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                //Str
+                String temp = TrailersAdapter.getItem(position);
 
-                if(Trailer_key=="empty")
-                {
-                    Toast.makeText(getActivity(), "Loading Trailer , please wait",
+                trailer_temp = Trailers_List.get(position);
+
+                if (trailer_temp == null) {
+                    Toast.makeText(getActivity(), "Loading Trailer in one click , please wait",
                             Toast.LENGTH_LONG).show();
-                }
-                else {
-                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.youtube.com/watch?v=" + Trailer_key));
-                    System.out.println("youtube link" + "http://www.youtube.com/watch?v=" + Trailer_key);
+
+                } else {
+                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.youtube.com/watch?v=" + trailer_temp.key));
+                    System.out.println("youtube link" + "http://www.youtube.com/watch?v=" + trailer_temp.key);
                     startActivity(intent);
                 }
 
-            }});
+            }
+        });
 
 
 
@@ -157,9 +182,9 @@ public class DetailsActivityFragment extends Fragment {
 
 
 
-    public class Trailer_Async extends AsyncTask<String, Void,String> {
+    public class Trailer_Async extends AsyncTask<String, Void,ArrayList <Trailer_obj>> {
         @Override
-        protected String doInBackground(String... params) {
+        protected ArrayList <Trailer_obj> doInBackground(String... params) {
             System.out.println("start of Trailer do in background");
             HttpURLConnection urlConnection = null;
             BufferedReader reader = null;
@@ -237,7 +262,7 @@ public class DetailsActivityFragment extends Fragment {
                 }
             }
             try {
-                String results;
+                ArrayList <Trailer_obj> results;
                 results=getTrailerDataFromJson(TrailerJsonStr);
                 System.out.println("end of do in background return results");
                 return results;
@@ -249,26 +274,35 @@ public class DetailsActivityFragment extends Fragment {
             return null;
         }
 
-        public String getTrailerDataFromJson(String movieJsonStr) throws JSONException {
-            String youtube_key;
+        public ArrayList<Trailer_obj> getTrailerDataFromJson(String movieJsonStr) throws JSONException {
+
+            String youtube_key,youtube_name;
             System.out.println("start of getmovie data");
             // These are the names of the JSON objects that need to be extracted.
             final String OWM_VIDEO_KEY = "key";
+            final String OWM_VIDEO_NAME = "name";
             JSONObject AllJson = new JSONObject(movieJsonStr);
             JSONArray resultsArray = AllJson.getJSONArray("results");
-            JSONObject movieJson=resultsArray.getJSONObject(0);
-            System.out.println("movie json string" +movieJson.toString());
-            System.out.println("object to string" + movieJson.toString());
-            youtube_key=movieJson.getString(OWM_VIDEO_KEY);
-            System.out.println("youtube key in do in background"+youtube_key);
-            return youtube_key;
+            for (int i = 0; i < resultsArray.length(); i++) {
+                JSONObject movieJson = resultsArray.getJSONObject(i);
+                System.out.println("movie json string" + movieJson.toString());
+                System.out.println("object to string" + movieJson.toString());
+                youtube_key = movieJson.getString(OWM_VIDEO_KEY);
+                youtube_name = movieJson.getString(OWM_VIDEO_NAME);
+                Trailer_obj temp=new Trailer_obj(youtube_name,youtube_key);
+                Trailers_List.add(temp);
+                System.out.println("youtube key in do in background" + youtube_key);
+            }
+
+            return Trailers_List;
         }
 
 
         @Override
-        protected void onPostExecute(String s) {
-            Trailer_key=s;
-            System.out.println("youtube key in onpost"+Trailer_key);
+        protected void onPostExecute(ArrayList <Trailer_obj> s) {
+            //Trailer=s;
+           // super.onPostExecute();
+            System.out.println("youtube key in onpost is called");
         }
     }// end of Trailer async task
 

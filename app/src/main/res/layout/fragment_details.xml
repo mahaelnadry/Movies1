@@ -81,14 +81,12 @@
         android:text="New Text"
         android:id="@+id/text_desc"
         android:layout_gravity="bottom" />
-    <Button
-        android:layout_width="wrap_content"
+    <ListView  android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Play Trailer"
-        android:drawableRight="@android:drawable/btn_plus"
-        android:id="@+id/button_trailer"
-        android:layout_gravity="center_horizontal"
-        />
+        android:id="@+id/Listview_trailers" />
+    <ListView  android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/Listview_reviews" />
 </LinearLayout>
 
 </ScrollView>
