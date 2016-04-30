@@ -51,7 +51,7 @@ public class DetailsActivityFragment extends Fragment {
     ListView Trailers_ListView;
     ListView Reviews_ListView;
     ArrayList<Trailer_obj> Trailers_List;
-    List<Review_obj> Reviews_List;
+    ArrayList<Review_obj> Reviews_List;
     public ArrayAdapter<String> TrailersAdapter;
     //public ArrayAdapter<String> ReviewsAdapter;
     //public ArrayAdapter<Review_obj> ReviewsAdapter;
@@ -333,7 +333,7 @@ public class DetailsActivityFragment extends Fragment {
         }
 
         @Override
-        protected void onPostExecute(List <Review_obj> s) {
+        protected void onPostExecute(ArrayList <Review_obj> s) {
             //Trailer=s;
             // super.onPostExecute();
             Reviews_List=s;

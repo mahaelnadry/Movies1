@@ -18,11 +18,11 @@ import java.util.List;
  */
 public class ReviewAdapter{
     private Context context;
-    private List<Review_obj> Review_obj_array ;
+    private ArrayList<Review_obj> Review_obj_array ;
     private int resource;
     private Object mLock;
 
-    public ReviewAdapter( Context movie_context,int resource_layout,List<Review_obj> movie_array) {
+    public ReviewAdapter( Context movie_context,int resource_layout,ArrayList<Review_obj> movie_array) {
         context=movie_context;
         Review_obj_array=movie_array;
         resource=resource_layout;
