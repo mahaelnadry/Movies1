@@ -5,6 +5,8 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -16,11 +18,13 @@ import java.util.List;
 /**
  * Created by mahae_000 on 4/30/2016.
  */
-public class ReviewAdapter{
+public class ReviewAdapter extends BaseAdapter {
     private Context context;
     private ArrayList<Review_obj> Review_obj_array ;
     private int resource;
     private Object mLock;
+
+
 
     public ReviewAdapter( Context movie_context,int resource_layout,ArrayList<Review_obj> movie_array) {
         context=movie_context;
@@ -66,15 +70,15 @@ public class ReviewAdapter{
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         System.out.println("get view is called");
-        TextView text_author = (TextView) convertView;
-        View row;
-        ViewHolder holder = null;
-          row = convertView;
-        if (convertView == null) {
-            convertView = LayoutInflater.from(getContext()).inflate(resource, parent, false);
-            LayoutInflater inflater = ((Activity) context).getLayoutInflater();
 
+        View row =convertView;
+        ViewHolder holder =null;
+
+        if (row== null) {
+            row = LayoutInflater.from(parent.getContext()).inflate(resource, parent, false);
+            LayoutInflater inflater = ((Activity) context).getLayoutInflater();
             row = inflater.inflate(resource, parent, false);
+            holder = new ViewHolder();
             holder.textView_author = (TextView) row.findViewById(R.id.list_item_author);
             holder.textView_comment = (TextView) row.findViewById(R.id.list_item_comment);
             row.setTag(holder);

@@ -85,8 +85,12 @@
         android:layout_height="wrap_content"
         android:id="@+id/Listview_trailers" />
     <ListView  android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/Listview_reviews" />
+        android:layout_height="match_parent"
+        android:id="@+id/Listview_reviews"
+        android:smoothScrollbar="true"
+        android:fastScrollEnabled="true"
+        android:nestedScrollingEnabled="true"
+        android:scrollbarAlwaysDrawVerticalTrack="true" />
 </LinearLayout>
 
 </ScrollView>

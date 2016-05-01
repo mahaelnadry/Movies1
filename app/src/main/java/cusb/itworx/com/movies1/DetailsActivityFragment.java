@@ -102,7 +102,7 @@ public class DetailsActivityFragment extends Fragment {
         //  ,"2014-11-18","131631","12.707473","2780","6.8","null trailer");
 
         ((TextView) (rootView.findViewById(R.id.text_title))).setText(Detailed_movie.getTitle());
-        ((TextView) (rootView.findViewById(R.id.text_rating))).setText(Detailed_movie.getAvg());
+        ((TextView) (rootView.findViewById(R.id.text_rating))).setText(Detailed_movie.getAvg()+"/10");
         ((TextView) (rootView.findViewById(R.id.text_date))).setText(Detailed_movie.getDate());
         ((TextView) (rootView.findViewById(R.id.text_desc))).setText(Detailed_movie.getDesc());
 
@@ -154,7 +154,7 @@ public class DetailsActivityFragment extends Fragment {
         });
         List<String> review_names = new ArrayList<String>();
         System.out.println("review size before while" +  Reviews_List.size());
-        while(Reviews_List.size()==0){
+        if(Reviews_List.size()==0){
             System.out.println("loading reviews toast , length of review list "+Reviews_List.size());
             Toast.makeText(getActivity(), "Loading Reviews, please wait",
                     Toast.LENGTH_SHORT).show();
@@ -210,9 +210,9 @@ public class DetailsActivityFragment extends Fragment {
         return  rootView;
             } // end of oncreateview
 
-    public class Reviews_Async extends AsyncTask<String, Void,List <Review_obj>> {
+    public class Reviews_Async extends AsyncTask<String, Void,ArrayList <Review_obj>> {
         @Override
-        protected List <Review_obj> doInBackground(String... params) {
+        protected ArrayList <Review_obj> doInBackground(String... params) {
             System.out.println("start of review do in background");
             HttpURLConnection urlConnection = null;
             BufferedReader reader = null;
@@ -290,7 +290,7 @@ public class DetailsActivityFragment extends Fragment {
                 }
             }
             try {
-                List <Review_obj> results;
+                ArrayList <Review_obj> results;
                 results=getReviewsDataFromJson(ReviewsJsonStr);
                 System.out.println("end of  review do in background return results of length"+results.size());
                 return results;
@@ -302,7 +302,7 @@ public class DetailsActivityFragment extends Fragment {
             return null;
         }
 
-        public List<Review_obj> getReviewsDataFromJson(String movieJsonStr) throws JSONException {
+        public ArrayList<Review_obj> getReviewsDataFromJson(String movieJsonStr) throws JSONException {
 
             String author,comment;
             System.out.println("start of getreview data");
@@ -333,14 +333,24 @@ public class DetailsActivityFragment extends Fragment {
         }
 
         @Override
-        protected void onPostExecute(ArrayList <Review_obj> s) {
-            //Trailer=s;
-            // super.onPostExecute();
-            Reviews_List=s;
-            System.out.println("youtube key in onpost is called");
+        protected void onPostExecute(ArrayList<Review_obj> result) {    //result da el rage3 mn do in background
+            System.out.println("start of onpostexecture");
+            super.onPostExecute(result);
+            if (result != null) {
+                ReviewsAdapter.notifyDataSetChanged();
+                System.out.println("results of onpostexecture not null");
+                System.out.println("size of results is"+result.size());
+
+                for(int i=0 ; i<ReviewsAdapter.getCount() ; i++){
+                    Review_obj s = ReviewsAdapter.getItem(i);
+                    System.out.println("author in adapter   " + s.getAuthor());
+                }
+
+            }
+            System.out.println("end of onpostexecute");
         }
 
-    }// end of Trailer async task
+    }// end of review async task
 
 
     public class Trailer_Async extends AsyncTask<String, Void,ArrayList <Trailer_obj>> {
@@ -465,6 +475,14 @@ public class DetailsActivityFragment extends Fragment {
            // super.onPostExecute();
 
             System.out.println("youtube key in onpost is called");
+            super.onPostExecute(s);
+            if (s != null) {
+                ReviewsAdapter.notifyDataSetChanged();
+                System.out.println("results of onpostexecture not null");
+                System.out.println("size of results is"+s.size());
+
+
+            }
         }
     }// end of Trailer async task
 

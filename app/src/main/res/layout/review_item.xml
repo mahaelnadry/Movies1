@@ -9,12 +9,16 @@
     android:layout_height="wrap_content"
     android:gravity="center_vertical"
     android:id="@+id/list_item_author"
-    android:minHeight="@dimen/abc_action_bar_default_height_material"/>
+    android:minHeight="@dimen/abc_action_bar_default_height_material"
+    android:text="Loading reviews"
+    android:textStyle="bold"
+    android:textColor="@color/accent_material_dark"/>
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
         android:id="@+id/list_item_comment"
-        android:minHeight="@dimen/abc_action_bar_default_height_material"/>
+        android:minHeight="@dimen/abc_action_bar_default_height_material"
+        android:text="Loading reviews"/>
 
 </LinearLayout>
