@@ -47,7 +47,7 @@ public class DetailsActivityFragment extends Fragment {
     Button fav_btn;
     Button trailer_btn;
     SharedPreferences mPrefs ;
-    String Trailer_key;
+   // String Trailer_key;
     ListView Trailers_ListView;
     ListView Reviews_ListView;
     ArrayList<Trailer_obj> Trailers_List;
@@ -60,20 +60,33 @@ public class DetailsActivityFragment extends Fragment {
     ArrayList<String> Authors_List;
     Review_obj  review_temp;
     Trailer_obj trailer_temp;
+    boolean loaded;
     public DetailsActivityFragment() {
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        Trailer_key="empty";
+        loaded=false;
         Trailers_List= new ArrayList<Trailer_obj>();
          trailer_temp = new Trailer_obj();
         Reviews_List= new ArrayList<Review_obj>();
          review_temp = new Review_obj();
 
         super.onCreate(savedInstanceState);
+
+       // Bundle extras =getArguments().getBundle("movie_object");
+        Bundle extras = getArguments();
         Intent intent = getActivity().getIntent();
+        if(extras!=null) {  //2pane UI
+            loaded=true;
+            Detailed_movie = (Movie_obj) extras.getSerializable("movie_object");
+            Trailer_Async trailer = new Trailer_Async();
+            trailer.execute(Detailed_movie.getId());
+            Reviews_Async Review = new Reviews_Async();
+            Review.execute(Detailed_movie.getId());
+        }
         if (intent != null && intent.hasExtra("movie_object")) {
+            loaded=true;
             Detailed_movie = (Movie_obj) intent.getSerializableExtra("movie_object");
             Trailer_Async trailer = new Trailer_Async();
             trailer.execute(Detailed_movie.getId());
@@ -96,16 +109,29 @@ public class DetailsActivityFragment extends Fragment {
                              Bundle savedInstanceState) {
         System.out.println("detailed fragment started ");
         View rootView = inflater.inflate(R.layout.fragment_details, container, false);
-
         //Detailed_movie = new Movie_obj("The Hunger Games: Mockingjay - Part 1","/gj282Pniaa78ZJfbaixyLXnXEDI.jpg"
           //      ,"Katniss Everdeen reluctantly becomes the symbol of a mass rebellion against the autocratic Capitol."
         //  ,"2014-11-18","131631","12.707473","2780","6.8","null trailer");
+        fav_btn=(Button)rootView.findViewById(R.id.button_fav);
+        if(loaded==false)
+        {
+            fav_btn.setVisibility(View.INVISIBLE);
+            ((TextView) (rootView.findViewById(R.id.text_title))).setVisibility(View.GONE);
+            ((TextView) (rootView.findViewById(R.id.text_rating))).setVisibility(View.GONE);
+            ((TextView) (rootView.findViewById(R.id.text_date))).setVisibility(View.INVISIBLE);
+            ((TextView) (rootView.findViewById(R.id.text_desc))).setVisibility(View.INVISIBLE);
+        }
+        else {
+            if(Detailed_movie.isFav()==false) {
+                fav_btn.setText("Add to");
+                fav_btn.setCompoundDrawablesWithIntrinsicBounds(0, 0, android.R.drawable.btn_star_big_off, 0);
+            }
 
-        ((TextView) (rootView.findViewById(R.id.text_title))).setText(Detailed_movie.getTitle());
-        ((TextView) (rootView.findViewById(R.id.text_rating))).setText(Detailed_movie.getAvg()+"/10");
-        ((TextView) (rootView.findViewById(R.id.text_date))).setText(Detailed_movie.getDate());
-        ((TextView) (rootView.findViewById(R.id.text_desc))).setText(Detailed_movie.getDesc());
-
+            ((TextView) (rootView.findViewById(R.id.text_title))).setText(Detailed_movie.getTitle());
+            ((TextView) (rootView.findViewById(R.id.text_rating))).setText(Detailed_movie.getAvg() + "/10");
+            ((TextView) (rootView.findViewById(R.id.text_date))).setText(Detailed_movie.getDate());
+            ((TextView) (rootView.findViewById(R.id.text_desc))).setText(Detailed_movie.getDesc());
+        }
         String size = "w185/";
         String full_url = "http://image.tmdb.org/t/p/" + size + Detailed_movie.getImg_path();
         ImageView img = (ImageView) rootView.findViewById(R.id.img_poster);
@@ -116,7 +142,7 @@ public class DetailsActivityFragment extends Fragment {
                 .fit()
                 .into(img);
        mPrefs=PreferenceManager.getDefaultSharedPreferences(getActivity());
-        fav_btn=(Button)rootView.findViewById(R.id.button_fav);
+
         Trailers_ListView=(ListView)rootView.findViewById(R.id.Listview_trailers);
        Reviews_ListView=(ListView)rootView.findViewById(R.id.Listview_reviews);
        // trailer_btn=(Button)rootView.findViewById(R.id.button_trailer);
@@ -134,7 +160,7 @@ public class DetailsActivityFragment extends Fragment {
                 boolean commited;
                 fav_btn.setText("Added to");
                 fav_btn.setCompoundDrawablesWithIntrinsicBounds(0, 0, android.R.drawable.btn_star_big_on, 0);
-                //fav_btn.setBackgroundColor(Color.CYAN);
+
                 Detailed_movie.setFav(true);
                 SharedPreferences.Editor prefsEditor = mPrefs.edit();
                 Gson gson = new Gson();
@@ -477,7 +503,8 @@ public class DetailsActivityFragment extends Fragment {
             System.out.println("youtube key in onpost is called");
             super.onPostExecute(s);
             if (s != null) {
-                ReviewsAdapter.notifyDataSetChanged();
+                Trailers_List=s;
+                TrailersAdapter.notifyDataSetChanged();
                 System.out.println("results of onpostexecture not null");
                 System.out.println("size of results is"+s.size());
 

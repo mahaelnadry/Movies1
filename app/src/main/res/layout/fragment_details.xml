@@ -38,7 +38,7 @@
             android:id="@+id/rating_date"
             android:orientation="vertical"
             android:paddingTop="30dp"
-            android:paddingRight="40dp"
+            android:paddingRight="10dp"
             android:layout_alignParentRight="true">
             <TextView
                 android:layout_width="wrap_content"
@@ -81,9 +81,19 @@
         android:text="New Text"
         android:id="@+id/text_desc"
         android:layout_gravity="bottom" />
+
     <ListView  android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/Listview_trailers" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Reviews"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textStyle="bold"
+        android:textColor="@color/accent_material_dark"
+        android:id="@+id/text_rev"
+        android:layout_gravity="bottom" />
     <ListView  android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:id="@+id/Listview_reviews"

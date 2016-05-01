@@ -41,7 +41,8 @@ import java.util.Map;
  * A placeholder fragment containing a simple view.
  */
 public class MainActivityFragment extends Fragment {
-
+//listener object
+    public MovieListener Listener;
     private static final String LOG_TAG = FetchMovieTask.class.getSimpleName();
     public  GridAdapter movie_Adapter;
     public ArrayList <Movie_obj>movie_obj_array;
@@ -61,6 +62,11 @@ public class MainActivityFragment extends Fragment {
         System.out.println("after execute in update movie ");
 
     }
+
+    public void setListener(MovieListener listener) {
+        Listener = listener;
+    }
+
     public void GetFavMovies() {
         movie_obj_array.clear();
         mPrefs=PreferenceManager.getDefaultSharedPreferences(getActivity());
@@ -111,7 +117,8 @@ public class MainActivityFragment extends Fragment {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState){
+
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
         movie_obj_array= new ArrayList<Movie_obj>();
@@ -147,10 +154,9 @@ public class MainActivityFragment extends Fragment {
                 Movie_obj clicked_movie = movie_Adapter.getItem(position);
                 //((Callback) getActivity()).onItemSelected(movie);
                 System.out.println("clicked item");
-                Intent i = new Intent(getActivity(), DetailsActivity.class);
-                i.putExtra("movie_object", clicked_movie);
-                startActivity(i);
 
+                Listener.setSelectedMovie(clicked_movie);
+                //((MainActivity) getActivity().setSelectedMovie(clicked_movie);
 
             }
         });
